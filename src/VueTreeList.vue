@@ -31,40 +31,40 @@
             <i class="vue-tree-icon item-icon icon-folder"></i>
           </slot>
         </span>
-        <div class="node-content" v-if="!editable" :style="{color:shiTextColor}">
+        <div class="node-content" v-if="!editable" :style="{color:nodeTextColor}">
           {{model.name}}
         </div>
         <input v-else class="vue-tree-input"
          type="text" 
          ref="nodeInput" 
          :value="model.name" 
-         @input="updateName" 
-         @blur="setUnEditable">
+         @input.prevent="updateName" 
+         @blur.prevent="setUnEditable">
         <div class="operation" v-show="isHover">
-          <span title="新增节点" @click.stop.prevent="addChild(false)" :style="{display:shiIconColor[0]}" v-if="!model.isLeaf" >
+          <span title="新增节点" @click.stop.prevent="addChild(false)" :style="{display:nodeIconShow[0]}" v-if="!model.isLeaf" >
             <slot name="addTreeNode">
               <i class="vue-tree-icon icon-folder-plus-e"></i>
             </slot>
           </span>
-          <span title="新增叶子节点" @click.stop.prevent="addChild(true)" v-if="!model.isLeaf" :style="{display:shiIconColor[1]}">
+          <span title="新增叶子节点" @click.stop.prevent="addChild(true)" v-if="!model.isLeaf" :style="{display:nodeIconShow[1]}">
             <slot name="addLeafNode">
               <i class="vue-tree-icon icon-plus"></i>
             </slot>
           </span>
           <span title="编辑" @click.stop.prevent="setEditable">
             <slot name="edit">
-              <i class="vue-tree-icon icon-edit" :style="{display:shiIconColor[2]}"></i>
+              <i class="vue-tree-icon icon-edit" :style="{display:nodeIconShow[2]}"></i>
             </slot>
           </span>
           <span title="删除" @click.stop.prevent="delNode">
             <slot name="edit">
-              <i class="vue-tree-icon icon-trash" :style="{display:shiIconColor[3]}"></i>
+              <i class="vue-tree-icon icon-trash" :style="{display:nodeIconShow[3]}"></i>
             </slot>
           </span>
           <!-- shi append customize function export -->
           <span title="自定义事件" @click.stop.prevent="shiFunc">
             <slot name="edit">
-              <i class="vue-tree-icon icon-stack" :style="{display:shiIconColor[4]}"
+              <i class="vue-tree-icon icon-stack" :style="{display:nodeIconShow[4]}"
               ></i>
             </slot>
           </span>
@@ -83,8 +83,9 @@
       <item v-for="model in model.children"
         :default-tree-node-name="defaultTreeNodeName"
         :default-leaf-node-name="defaultLeafNodeName"
-        :shiIconColor="shiIconColor"
-        :shiTextColor="shiTextColor"
+        :node-add-new-props="nodeAddNewProps"
+        :nodeTextColor="nodeTextColor"
+        :nodeIconShow="nodeIconShow"
         :model="model"
         :key='model.id'>
       </item>
@@ -94,7 +95,7 @@
 
 <script>
 import { TreeNode } from './Tree.js'
-import { addHandler, removeHandler, fireFocusEvent } from './tools.js'
+import { addHandler, removeHandler } from './tools.js'
 
 let fromComp = null
 document.oncontextmenu = function () {
@@ -123,11 +124,14 @@ export default {
       type: String,
       default: 'new leaf'
     },
-    shiTextColor: {
+    nodeAddNewProps: {
+      type: Object
+    },
+    nodeTextColor: {
       type: String,
       default: '#454D58'
     },
-    shiIconColor: {
+    nodeIconShow: {
       type: Array,
       default () {
         return [
@@ -180,8 +184,9 @@ export default {
       this.editable = true
       this.$nextTick(() => {
         this.$refs.nodeInput.focus()
-        //  fireFocusEvent(this.$refs.nodeInput.focus())
       })
+      //  fireFocusEvent(this.$refs.nodeInput.focus())
+
     },
 
     setUnEditable () {
@@ -214,7 +219,7 @@ export default {
       while (node._props.model.name !== 'root') {
         node = node.$parent
       }
-      node.$emit('shiFuc', clickModel)
+      node.$emit('extFunc', clickModel)
     },
     click () {
       var node = this.$parent
@@ -225,9 +230,12 @@ export default {
       node.$emit('click', clickModel)
     },
     addChild (isLeaf) {
+      // 20180914 新增功能，外部调用数据新增增加自定义属性
+      const nodeNewObj = this.nodeAddNewProps
+      // end by shi 
       const name = isLeaf ? this.defaultLeafNodeName : this.defaultTreeNodeName
       this.expanded = true
-      var node = new TreeNode({ name, isLeaf })
+      var node = new TreeNode({ name, isLeaf ,nodeNewObj})
       this.model.addChildren(node, true)
     },
     dragStart (e) {
@@ -334,7 +342,7 @@ body{
     cursor: pointer;
     /* Better Font Rendering =========== */
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    // -moz-osx-font-smoothing: grayscale;
     &.item-icon {
       margin-right: 4px;
       &:hover {
@@ -380,10 +388,11 @@ body{
       background-color: transparent;
     }
     &.bottom {
+      margin-top: -5px;
       background-color: transparent;
     }
     &.active {
-      border-bottom: 3px dashed blue;
+      border-bottom: 2px dashed blue;
     }
   }
   .tree-node {
@@ -392,7 +401,7 @@ body{
     padding: 5px 0 5px 1rem;
     .input {
       border: none;
-      max-width: 150px;
+      max-width: 100px;
       border-bottom: 1px solid blue;
     }
     &:hover {
@@ -423,7 +432,8 @@ body{
     width: 100px;
   }
   .node-content{
-    margin-top:2px;
+    margin:4px 0 2px 0;
+    font-size: 12px;
     max-width: 100px;
     white-space: nowrap;
     text-overflow: ellipsis;
