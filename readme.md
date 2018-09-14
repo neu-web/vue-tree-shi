@@ -13,10 +13,11 @@
 <vue-tree-list @click="onClick" :model="data" 
 default-tree-node-name="new node" 
 default-leaf-node-name="new leaf"
-:shiTextColor="shiTextColor"
-:shiIconColor="shiIconColor" 
+:nodeAddNewProps="nodeAddNewProps"
+:nodeTextColor="nodeTextColor"
+:nodeIconShow="nodeIconShow" 
 @mouseOver='mouseOver1'
-@shiFuc="newFunc"
+@extFunc="newFunc"
 ></vue-tree-list>
 <button @click="getNewTree">Get new tree</button>
 <pre>
@@ -30,41 +31,72 @@ export default {
   },
   data () {
     return {
-      shiIconColor: [
-        'inline',
-        'inline',
-        'inline',
-        'inline',
-        'inline'],
-      shiTextColor:'#454D58',
+      // nodeAddNewProps 新增节点/新增叶子节点，data数据新增属性，类型object
+      nodeAddNewProps: {color:'',text:'12321321321312321',info:[123,444,555]},
+      // nodeIconShow对象数组,对应的icon为显示或隐藏，可传入值为inline 或 none
+      nodeIconShow: ['inline','inline','inline','inline','inline'],
+      // nodeTextColor为传入的tree node name 文字颜色
+      nodeTextColor:'#454D58',
       newTree: {},
-      data: new Tree([
-        {
-          name: 'Node 1',
-          id: 1,
-          pid: 0,
-          dragDisabled: true,
-          children: [
-            {
-              name: 'Node 1-2',
-              id: 2,
-              isLeaf: true,
-              pid: 1
-            }
-          ]
-        },
-        {
-          name: 'Node 2',
-          id: 3,
-          pid: 0,
-          dragDisabled: true
-        },
-        {
-          name: 'Node 3',
-          id: 4,
-          pid: 0
-        }
-      ])
+      data: new Tree(
+        [
+          {
+            name: '文件夹1',
+            id: 1,
+            pid: 0,
+            dragDisabled: false,
+            nodeAddNewProps:{},
+            children: [
+              {
+                name: '文件夹11',
+                id: 2,
+                isLeaf: true,
+                pid: 1,
+                dragDisabled: false
+              }
+            ]
+          },
+          {
+            name: '文件夹2',
+            id: 3,
+            pid: 0,
+            dragDisabled: false,
+            nodeAddNewProps:{
+              color:'green',text:'12321321321312321',info:[123,444,555]
+            },
+            color:'red',
+          },
+          {
+            name: '文件夹3',
+            id: 4,
+            pid: 0,
+            dragDisabled: false,
+            nodeAddNewProps:{},
+            color:'#4242cc'
+          },
+          {
+            name: '文件夹3',
+            id: 5,
+            pid: 0,
+            nodeAddNewProps:{},
+            dragDisabled: false
+          },
+          {
+            name: '文件夹3',
+            id: 6,
+            pid: 0,
+            nodeAddNewProps:{},
+            dragDisabled: false
+          },
+          {
+            name: '文件夹3',
+            id: 7,
+            pid: 0,
+            nodeAddNewProps:{},
+            dragDisabled: false
+          }
+        ]
+      )
     }
   },
   methods: {
@@ -132,15 +164,12 @@ onClick(model) {
 ...
 ```
 
-# Forbid dragging
+#Forbid dragging
 Use `dragDisabled` to forbid dragging:
-```javascript
+  javascript
 data: new Tree([
   {
     name: 'Node 1',
     id: 1,
     pid: 0,
     dragDisabled: true,
-  ...
-```
-
