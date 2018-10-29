@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="model.name !== 'root'">
+    <div v-if="model.name !== 'root'" :style="{color:nodeTextColor}">
       <div class="border up" :class="{'active': isDragEnterUp}"
         @drop="dropUp"
         @dragenter="dragEnterUp"
@@ -31,15 +31,15 @@
             <i class="vue-tree-icon item-icon icon-folder"></i>
           </slot>
         </span>
-        <div class="node-content" v-if="!editable" :style="{color:nodeTextColor}">
+        <div class="node-content" v-if="!editable" >
           {{model.name}}
         </div>
         <input v-else class="vue-tree-input"
          type="text" 
          ref="nodeInput" 
          :value="model.name" 
-         @input.prevent="updateName" 
-         @blur.prevent="setUnEditable">
+         @input.stop.prevent="updateName" 
+         @blur.stop.prevent="setUnEditable">
         <div class="operation" v-show="isHover">
           <span title="新增节点" @click.stop.prevent="addChild(false)" :style="{display:nodeIconShow[0]}" v-if="!model.isLeaf" >
             <slot name="addTreeNode">
@@ -125,7 +125,12 @@ export default {
       default: 'new leaf'
     },
     nodeAddNewProps: {
-      type: Object
+      type: Object,
+      default(){
+        return{
+          
+        }
+      }
     },
     nodeTextColor: {
       type: String,
@@ -149,9 +154,8 @@ export default {
     },
 
     caretClass () {
-      return this.expanded ? 'icon-caret-down' : 'icon-caret-right'
+      return this.expanded ? 'icon-caret-right' : 'icon-caret-down'
     },
-
     isFolder () {
       return this.model.children &&
         this.model.children.length
@@ -337,7 +341,7 @@ body{
     font-variant: normal;
     text-transform: none;
     line-height: 1;
-    color:#8898AC;
+    // color:#8898AC;
     vertical-align: middle;
     cursor: pointer;
     /* Better Font Rendering =========== */
@@ -350,7 +354,8 @@ body{
       }
     }
     &:hover {
-      color: rgb(63, 93, 156);
+      // color: rgb(63, 93, 156);
+      opacity: 0.5;
     }
   }
   .icon-file:before {

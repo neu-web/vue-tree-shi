@@ -12,14 +12,17 @@
           @extFunc="newFunc"
           >
       <!--
-          nodeTextColor传入文字的颜色，默认为#454D58
-          :nodeTextColor="nodeTextColor"
-          nodeIconShow  icon是否显示，0-4对应的分别为，新建节点，新建叶子节点，编辑，删除，自定义事件
-          ['inline','inline','inline','inline','inline']
-          :nodeIconShow="nodeIconShow"
+          @click="onClick" 点击当前节点事件
+          :model="data"    对应树data
+          default-tree-node-name="新建节点" 
+          default-leaf-node-name="新建叶子节点" 
+          :nodeAddNewProps="nodeAddNewProps" 自定义新增的属性
+          :nodeTextColor="nodeTextColor"   文字和图标颜色 ，默认为#454D58
+          :nodeIconShow="nodeIconShow"    5个图标 是否显示隐藏 ['inline','inline','none','inline','inline']
+          @mouseOver='mouseOver1'     鼠标滑过事件的触发
+          @extFunc="newFunc"     第五个图标的自定义事件
       -->
       </vue-tree-list>
-      <button @click="addNode">test1</button>
 </div>
 </template>
 <script>
@@ -32,11 +35,11 @@ export default {
   data () {
     return {
       // nodeAddNewProps 新增节点/新增叶子节点，data数据新增属性，类型object
-      nodeAddNewProps: {color:'',text:'12321321321312321',info:[123,444,555]},
+      nodeAddNewProps: {color:'test',text:'111',info:[123,444,555]},
       // nodeIconShow对象数组,对应的icon为显示或隐藏，可传入值为inline 或 none
       nodeIconShow: ['inline','inline','inline','inline','inline'],
-      // nodeTextColor为传入的tree node name 文字颜色
-      nodeTextColor:'#454D58',
+      // nodeTextColor树形菜单颜色颜色
+      nodeTextColor:'rgb(64, 86, 114)',
       newTree: {},
       data: new Tree(
         [
@@ -93,7 +96,7 @@ export default {
             id: 7,
             pid: 0,
             nodeAddNewProps:{},
-            dragDisabled: false
+            dragDisabled: true
           }
         ]
       )
@@ -108,7 +111,7 @@ export default {
     },
     // vue-tree-list 增加节点
     addNode: function () {
-      var node = new TreeNode({ name: 'new node', isLeaf: false, info:'123' })
+      var node = new TreeNode({ name: 'new node', isLeaf: false, info:'123',new:this.nodeAddNewProps })
       if (!this.data.children) this.data.children = []
       this.data.addChildren(node)
     },
@@ -152,26 +155,4 @@ export default {
   }
 }
 </script>
-<style>
- 
-  /* .node-content{
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-  .cm-center{
-    margin-top: 40px;
-    text-align: center
-  }
-  .sub-title{
-    margin: 15px 0 20px 0;
-    color:  #8898AC;
-  }
-  .cm-show-data{
-    margin-top: 20px;
-    width: 100%;
-    height: 200px;
-    background: rgb(228, 224, 221);
-    overflow: auto;
-  } */
-</style>
+
